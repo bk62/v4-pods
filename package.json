@@ -70,5 +70,8 @@
     "contracts/**",
     "deployments/**",
     "deploy/**"
-  ]
+  ],
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0"
+  }
 }
