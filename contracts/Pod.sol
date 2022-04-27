@@ -4,7 +4,6 @@ pragma solidity 0.8.6;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
@@ -12,6 +11,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 
 import "@pooltogether/v4-core/contracts/interfaces/IPrizePool.sol";
 import "@pooltogether/v4-core/contracts/interfaces/ITicket.sol";
+import "@pooltogether/owner-manager-contracts/contracts/Ownable.sol";
 
 
 import "./interfaces/IPod.sol";
@@ -29,6 +29,11 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20Metadata;
     using Address for address;
 
+    /**
+     * Global variables:
+     * __________________
+     */
+
     /// @notice Underlying prize pool
     IPrizePool public _prizePool;
 
@@ -40,17 +45,25 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
     /// @notice Underlying PrizePool Ticket
     ITicket public ticket;
 
+    /**
+     * Initialize:
+     * __________________
+     */
+
+
    /**
     * @notice Constructor
+    * @param owner_ Owner address
     * @param prizePool_ The PrizePool this Pod Vault is bound to
     * @param name_ Name of vault share token
     * @param symbol_ Symbol of vault share token
    */
     constructor(
+        address owner_,
         IPrizePool prizePool_,
         string memory name_,
         string memory symbol_
-    ) ERC20(name_, symbol_) {
+    ) ERC20(name_, symbol_) Ownable(owner_) {
         require(
             address(prizePool_) != address(0),
             "Pod:prize-pool-not-zero-address"

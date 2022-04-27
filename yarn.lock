@@ -1299,7 +1299,7 @@
   resolved "https://registry.yarnpkg.com/@pooltogether/fixed-point/-/fixed-point-1.0.0.tgz#2c9fb9fe1cca557ca2be7b9ed7414d5edd5a816f"
   integrity sha512-YhvjswZuDpKK/NFboyeFWoXhq4763kbi/hNx0L5+6kCRUq8WruvXR4WFvWlDo+5Dx1UsaOnPygAMfrJT0h7bMw==
 
-"@pooltogether/owner-manager-contracts@1.1.0":
+"@pooltogether/owner-manager-contracts@1.1.0", "@pooltogether/owner-manager-contracts@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@pooltogether/owner-manager-contracts/-/owner-manager-contracts-1.1.0.tgz#776f1b96a81cec05bfe6575583b4b239a4038fa9"
   integrity sha512-1PqkzSE/AJ4luGhpEfaN9YnHI7mbe63zy92iXgNwHJ4XDqerm+hfJsggrXK7BUyUkAIFLFf8+Ol0TntZAUTedw==
