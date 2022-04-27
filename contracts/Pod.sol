@@ -377,9 +377,6 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
         require(assets > 0, "Pod:zero-assets");
         require(shares > 0, "Pod:zero-shares");
 
-        // Call pre-deposit hook
-        _beforeDeposit(assets, shares);
-
         // Transer assets from msg.sender
         _asset.safeTransferFrom(msg.sender, address(this), assets);
         // Mint shares to receiver
@@ -387,11 +384,16 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
 
         // Emit Deposit event
         emit Deposit(msg.sender, receiver, assets, shares);
-
-        // Call post-deposit hook
-        _afterDeposit(assets, shares);
     }
 
+    /**
+     * @dev Internal function to burn `shares` pod shares issued to `owner` and
+     *      withdraw `assets` underlying assets tokens by transferring to `receiver`.
+     * @param assets Amount of underlying tokens to withdraw
+     * @param shares Amount of Pod shares to burn
+     * @param receiver Address to transfer underlying assets to
+     * @param owner Address of owner of the Pod shares
+     */
     function _withdraw(uint256 assets, uint256 shares, address receiver, address owner) internal {
         // Check amounts
         require(assets > 0, "Pod:zero-assets");
@@ -403,9 +405,6 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
             // Check caller allowance
             require(allowance(owner, msg.sender) >= shares, "Pod:insufficient-shares-allowance");
         }
-
-        // Call pre-withdrawal hook
-        _beforeWithdrawal(assets, shares);
 
         // Burn Pod shares
         _burn(owner, shares);
@@ -442,46 +441,6 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
 
         // Emit Withdraw event
         emit Withdraw(msg.sender, receiver, owner, assets, shares);
-
-        // Call post-withdrawal hook
-        _afterWithdrawal(assets, shares);
     }
 
-
-    /** 
-     *  Hooks:  
-     * ________
-    */
-
-    /**
-     * @notice Before withdrawal hook
-     * @param assets Amount of underlying assets requested to be withdrawn from vault
-     * @param shares Amount of vault shares requested to be burnt
-     * @dev Hook that is called before any withdrawals -- including withdrawing and redeeming
-    */
-    function _beforeWithdrawal(uint256 assets, uint256 shares) internal virtual {}
-
-    /**
-     * @notice After withdrawal hook
-     * @param assets Amount of underlying assets withdrawn from vault
-     * @param shares Amount of vault shares burnt
-     * @dev Hook that is called after any withdrawals -- including withdrawing and redeeming
-    */
-    function _afterWithdrawal(uint256 assets, uint256 shares) internal virtual {}
-
-    /**
-     * @notice Before deposit hook
-     * @param assets Amount of underlying assets requested to be deposited into vault
-     * @param shares Amount of vault shares requested to be issued
-     * @dev Hook that is called before any deposits -- including depositing and minting
-    */
-    function _beforeDeposit(uint256 assets, uint256 shares) internal virtual {}
-
-     /**
-     * @notice After deposit hook
-     * @param assets Amount of underlying assetsdeposited into vault
-     * @param shares Amount of vault shares issued
-     * @dev Hook that is called after any deposits -- including depositing and minting
-    */
-    function _afterDeposit(uint256 assets, uint256 shares) internal virtual {}
 }
