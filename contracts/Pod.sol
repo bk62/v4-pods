@@ -65,6 +65,10 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
         string memory symbol_
     ) ERC20(name_, symbol_) Ownable(owner_) {
         require(
+            address(owner_) != address(0),
+            "Pod:owner-not-zero-address"
+        );
+        require(
             address(prizePool_) != address(0),
             "Pod:prize-pool-not-zero-address"
         );
