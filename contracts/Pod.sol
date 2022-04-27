@@ -125,7 +125,6 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
     /**
      * @notice  Calculate a user's allocated vault `shares` from deposited `assets`.
      *          See {IERC4626-convertToShares}
-     * @dev Corresponds to the `_calculateAllocation` method in `v3-pods`.
     */
     function convertToShares(uint256 assets) public view virtual override returns (uint256 shares) {
         uint256 supply = totalSupply();
@@ -142,7 +141,6 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
     /**
      * @notice Calculate a user's `assets`, the underlying assets balance, from `shares`, the amount of vault shares 
      *         See {IERC4626-convertToAssets}
-     * @dev Corresponds to the `_calculateUnderlyingTokens` method in `v3-pods`.
     */
     function convertToAssets(uint256 shares) public view virtual override returns (uint256 assets) {
         uint256 supply = totalSupply();
