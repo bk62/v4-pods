@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@pooltogether/v4-core/contracts/interfaces/IPrizePool.sol";
 import "@pooltogether/v4-core/contracts/interfaces/ITicket.sol";
 import "@pooltogether/owner-manager-contracts/contracts/Ownable.sol";
+import "@pooltogether/v4-core/contracts/interfaces/IPrizeDistributor.sol";
 
 
 import "./interfaces/IPod.sol";
@@ -37,6 +38,9 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
     /// @notice Underlying prize pool
     IPrizePool public _prizePool;
 
+    /// @notice Prize distributor
+    IPrizeDistributor public _prizeDistributor;
+
     /// @notice Underlying ERC20 asset tokens
     ///         See {IERC4626-asset}
     /// @dev EIP-4626 requires that the underlying token implements metadata extensions to ERC-20
@@ -55,12 +59,14 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
     * @notice Constructor
     * @param owner_ Owner address
     * @param prizePool_ The PrizePool this Pod Vault is bound to
+    * @param prizePool_ The PrizeDistributor to claim prize payouts from
     * @param name_ Name of vault share token
     * @param symbol_ Symbol of vault share token
    */
     constructor(
         address owner_,
         IPrizePool prizePool_,
+        IPrizeDistributor prizeDistributor_,
         string memory name_,
         string memory symbol_
     ) ERC20(name_, symbol_) Ownable(owner_) {
@@ -80,8 +86,13 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
             address(prizePool_.getTicket()) != address(0),
             "Pod:prize-pool-ticket-not-zero-address"
         );
+        require(
+            address(prizeDistributor_) != address(0),
+            "Pod:prize-distributor-not-zero-address"
+        );
 
         _prizePool = prizePool_;
+        _prizeDistributor = prizeDistributor_;
         
         // Store the underlying PrizePool's underlying asset token and its ticket.
         // The underlying token is this vault's underlying asset as well.
