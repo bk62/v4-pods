@@ -16,6 +16,20 @@ interface IPod is IERC4626 {
     event BatchFloat(uint256 amount);
 
     /**
+     * @dev Emitted when prize payouts are claimed by a user
+     * TODO: currently not being used!
+     * @param user The user who claimed the prize
+     * @param amount The payout amount
+     */
+    event Claimed(address indexed user, uint256 amount);
+
+    /**
+     * @dev Emitted when prize payouts are claimed by the Pod.
+     * @param amount The payout amount
+     */
+    event PodClaimed(uint256 amount);
+
+    /**
      * @notice Returns the address of the PrizePool that the Pod is bound to.
      * @return The address of the prize pool
      */
