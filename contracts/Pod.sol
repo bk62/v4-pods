@@ -338,6 +338,24 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
     }
 
     /**
+     * @notice Claim prize payouts from PrizeDistributor
+     * @dev Claim underlying assets prize payouts for the Pod from PrizeDistributor.
+     * @return uint256 Claimed prize payouts amount
+     */
+    function drop() external returns (uint256) {
+        // TODO stub, not implemented
+
+        // Claim prizes from PrizeDistributor
+        // _prizeDistributor.claim(address(this));
+
+        // Run batch to eliminate sandwich attack
+        // and to reduce Pod float
+        // uint256 float = batch();
+
+        // emit PodClaimed(amount);
+    }
+
+    /**
      * Other Views:
      * ____________
      */
