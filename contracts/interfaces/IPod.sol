@@ -37,13 +37,16 @@ interface IPod is IERC4626 {
 
     /**
      * @notice Return the price of a single Pod vault share in terms of the underlying asset.
-     * @return Pod share price in underlying token units 
+     * @return Pod share price in underlying token units
      */
     function getPricePerShare() external view returns (uint256);
 
     /**
-     * @notice Allows batched deposits into the underlying PrizePool.
-     * Should be called periodically.
+     * @notice Deposit Pod float balance (underlying assets not deposited into PrizePool yet) in the PrizePool.
+     *         Allows batched deposits into the underlying PrizePool.
+     *         Should be called periodically.
+     * @dev Deposits the current float into the PrizePool.
+     *      Emits {BatchFloat} event
      * @return The amount of underlying assets deposited into the PrizePool.
      */
     function batch() external returns (uint256);
