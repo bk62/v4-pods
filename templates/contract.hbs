@@ -36,7 +36,12 @@ All members: {{members}}
   ) {{visibility}}{{#if outputs}} returns ({{outputs}}){{/if}}
 ```
 {{#if natspec.userdoc}}{{natspec.userdoc}}{{/if}}
+
+{{#if natspec.custom.userdetails}}{{natspec.custom.userdetails}}{{/if}}
+
 {{#if natspec.devdoc}}{{natspec.devdoc}}{{/if}}
+
+{{#if natspec.custom.devdetails}}{{natspec.custom.devdetails}}{{/if}}
 {{#if natspec.params}}
 #### Parameters:
 | Name | Type | Description                                                          |
