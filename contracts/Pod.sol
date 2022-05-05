@@ -323,10 +323,27 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
 
     /**
      * @notice Claim prize payouts from PrizeDistributor
+     *
      * @dev Claim underlying assets prize payouts for the Pod from PrizeDistributor.
+     *
+     * There are security concerns relating to the potentital for front-running the Pod's prize claims -- which can take place
+     * anytime after a draw.
+     *
+     * For example, consider how an attacker can leverage flash loans in a front-running attack to exploit naive proportionate
+     * shares-assets conversion.
+     *
+     *      Alice who has 10/100 shares for the Pod’s 100 USDC in assets and 10 USDC in unclaimed prizes calls a `claim` method.
+     *      Craig the attacker sandwiches this transaction with a 100 USDC flash loan that is deposited into the Pod and a withdrawal.
+     *
+     *      Pre-block: Alice has a claim on 10 USDC assets, Craig on 0
+     *      Post Alice’s txn: Alice has a claim on 10/200 * 210 = 10.5 USDC assets, Craig on 100/200 * 210 = 105 USDC
+     *      Post-block: Craig has withdrawn 105 USDC. Alice has a claim on 10/100 * 105 = 10.5 USDC
+     *
+     *      Consequence: Craig uses a 100 USDC flash loan to steal 0.5 USDC from Alice and 5 USDC collectively from the depositors of the Pod.
+     *
      * @return uint256 Claimed prize payouts amount
      */
-    function drop() external returns (uint256) {
+    function claimPrizes() external returns (uint256) {
         // TODO stub, not implemented
         // Claim prizes from PrizeDistributor
         // _prizeDistributor.claim(address(this));
