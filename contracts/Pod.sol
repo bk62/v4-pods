@@ -2,16 +2,21 @@
 
 pragma solidity 0.8.6;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
+
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 
 import "@pooltogether/v4-core/contracts/interfaces/IPrizePool.sol";
 import "@pooltogether/v4-core/contracts/interfaces/ITicket.sol";
-import "@pooltogether/owner-manager-contracts/contracts/Ownable.sol";
 import "@pooltogether/v4-core/contracts/interfaces/IPrizeDistributor.sol";
+
+// TODO replace w/ OZ upgradeable ownable
+import "./access/ManageableUpgradeable.sol";
 
 import "./interfaces/IPod.sol";
 
@@ -22,7 +27,7 @@ import "./interfaces/IPod.sol";
  *          Converts deposits into shares in the Pod Vault. The vault deposits the underlying asset tokens in the prize
  *          pool it is bound to and holds thetickets minted by the prize pool.
  */
-contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
+contract Pod is IPod, ERC20Upgradeable, ManageableUpgradeable, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20Metadata;
     using Address for address;
 
@@ -40,6 +45,7 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
     /// @notice Underlying ERC20 asset tokens
     ///         See {IERC4626-asset}
     /// @dev EIP-4626 requires that the underlying token implements metadata extensions to ERC-20
+    ///      Note: `_asset` is not necessarily ERC20Upgradeable
     IERC20Metadata public _asset;
 
     /// @notice Underlying PrizePool Ticket
@@ -51,21 +57,11 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
      */
 
     /**
-     * @notice Constructor
-     * @param owner_ Owner address
+     * @notice Initialize the Pod
      * @param prizePool_ The PrizePool this Pod Vault is bound to
-     * @param prizePool_ The PrizeDistributor to claim prize payouts from
-     * @param name_ Name of vault share token
-     * @param symbol_ Symbol of vault share token
+     * @param prizeDistributor_ The PrizeDistributor to claim prize payouts from
      */
-    constructor(
-        address owner_,
-        IPrizePool prizePool_,
-        IPrizeDistributor prizeDistributor_,
-        string memory name_,
-        string memory symbol_
-    ) ERC20(name_, symbol_) Ownable(owner_) {
-        require(address(owner_) != address(0), "Pod:owner-not-zero-address");
+    function initialize(IPrizePool prizePool_, IPrizeDistributor prizeDistributor_) external {
         require(address(prizePool_) != address(0), "Pod:prize-pool-not-zero-address");
         require(
             address(prizePool_.getToken()) != address(0),
@@ -77,9 +73,23 @@ contract Pod is IPod, ERC20, Ownable, ReentrancyGuard {
         );
         require(address(prizeDistributor_) != address(0), "Pod:prize-distributor-not-zero-address");
 
+        // Prize pool and dist
         _prizePool = prizePool_;
         _prizeDistributor = prizeDistributor_;
 
+        // Contract/inheritance config
+        __ReentrancyGuard_init();
+
+        // Init ERC20
+        __ERC20_init_unchained(
+            string(abi.encodePacked("Pod ", ERC20Upgradeable(_prizePool.getToken()).name())),
+            string(abi.encodePacked("p", ERC20Upgradeable(_prizePool.getToken()).symbol()))
+        );
+
+        // Ownable init
+        __ManageableUpgradeable_init_unchained();
+
+        // Init Core ERC-20s:
         // Store the underlying PrizePool's underlying asset token and its ticket.
         // The underlying token is this vault's underlying asset as well.
         // The ticket represents ownership of asset that the PrizePool is holding on the vault's behalf.
