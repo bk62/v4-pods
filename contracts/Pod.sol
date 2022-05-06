@@ -52,6 +52,24 @@ contract Pod is IPod, ERC20Upgradeable, ManageableUpgradeable, ReentrancyGuardUp
     ITicket public ticket;
 
     /**
+     * Modifiers:
+     * ____________
+     */
+
+    /**
+     * @dev Pause deposits during award period. Prevents "frontrunning" for deposits into a winning Pod.
+     * TODO  - How to determine the "Award period"? Or, should there be a draw-claim period since
+     *          claims can happen after a draw?
+     */
+    // modifier pauseDepositsDuringAwarding() {
+    //     require(
+    //         !IPrizeStrategyMinimal(_prizePool.prizeStrategy()).isRngRequested(),
+    //         "Cannot deposit while prize is being awarded"
+    //     );
+    //     _;
+    // }
+
+    /**
      * Initialize:
      * __________________
      */
@@ -61,7 +79,10 @@ contract Pod is IPod, ERC20Upgradeable, ManageableUpgradeable, ReentrancyGuardUp
      * @param prizePool_ The PrizePool this Pod Vault is bound to
      * @param prizeDistributor_ The PrizeDistributor to claim prize payouts from
      */
-    function initialize(IPrizePool prizePool_, IPrizeDistributor prizeDistributor_) external {
+    function initialize(IPrizePool prizePool_, IPrizeDistributor prizeDistributor_)
+        external
+        initializer
+    {
         require(address(prizePool_) != address(0), "Pod:prize-pool-not-zero-address");
         require(
             address(prizePool_.getToken()) != address(0),
@@ -289,7 +310,7 @@ contract Pod is IPod, ERC20Upgradeable, ManageableUpgradeable, ReentrancyGuardUp
         uint256 shares,
         address receiver,
         address owner
-    ) public virtual override returns (uint256 assets) {
+    ) public virtual override nonReentrant returns (uint256 assets) {
         // Calculate amount of assets corresponding to the amount of shares requested to be redeemed
         assets = previewRedeem(shares);
         // Withdraw assets and burn shares
