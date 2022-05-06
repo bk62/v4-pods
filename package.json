@@ -73,6 +73,7 @@
   ],
   "dependencies": {
     "@openzeppelin/contracts": "^4.5.0",
+    "@openzeppelin/contracts-upgradeable": "^4.6.0",
     "@pooltogether/owner-manager-contracts": "^1.1.0",
     "@pooltogether/v4-core": "^1.2.0"
   }
