@@ -3,14 +3,12 @@
 
 pragma solidity 0.8.6;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
 /**
  * @title EIP 4626 specification
  * @notice Interface of EIP 4626 Interface
  * as defined in https://eips.ethereum.org/EIPS/eip-4626
  */
-interface IERC4626 is IERC20 {
+interface IERC4626 {
   /**
    * @notice Event indicating that `caller` exchanged `assets` for `shares`, and transferred those `shares` to `owner`
    * @dev Emitted when tokens are deposited into the vault via {mint} and {deposit} methods
